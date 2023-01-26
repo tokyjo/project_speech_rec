@@ -2,7 +2,6 @@ from vosk import Model, KaldiRecognizer
 from pydub import AudioSegment
 from gtts import gTTS
 import pyaudio
-import pyttsx3  
 import requests
 import json
 import wave
@@ -12,21 +11,17 @@ import alsa_error as a
 
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
-SAMPLING_RATE= 44104
-FRAME_PER_BUFFER =8820 #chunk
-DEVICE_INDEX= -1
+SAMPLING_RATE= 48000
+FRAME_PER_BUFFER =9600 #chunk
+DEVICE_INDEX= 1
 
 NB_QUESTION= 3
 
-model_path="/home/unravel/IoT/project/vosk-model-small-fr-pguyot-0.3"
-#model_path="/home/username/project_IoT/vosk-model-small-fr-pguyot-0.3"
 quest_url="http://127.0.0.1:5000"
 
-FOLDER_Q = "/home/unravel/IoT/project/gladys/questions/"
-FOLDER_A= "/home/unravel/IoT/project/gladys/responses/"
-#FOLDER_Q = "/home/username/project_IoT/gladys/questions/"
-#FOLDER_A= "/home/username/project_IoT/gladys/responses/"
-
+path=os.getcwd()
+FOLDER_Q = path+"/questions/"
+FOLDER_A= path+"/responses/"
 
 class _GTTS():
     engine=None
@@ -121,7 +116,8 @@ class Gladys():
         req = requests.get(url)
         jsonobj= json.loads(req.text)
         self.questions=jsonobj["questions"]
-        
+        NB_QUESTION=len(self.questions)
+        print("Number of questions:",NB_QUESTION)
 
     def get_audio(self,url):
         audio_file=FOLDER_Q+"question_"+str(self.count)+".wav"
@@ -141,36 +137,13 @@ class Gladys():
         Au.play()
         Au.stop()
         
-    def get_response(self):
-        self.listening= True
-        Au=_Audiofile()
-        Au.stream = Au.mic.open(format=FORMAT,channels=CHANNELS,rate=SAMPLING_RATE,input=True,frames_per_buffer=FRAME_PER_BUFFER)
-        print("start recording")
-        while self.listening:
-            Au.stream.start_stream()
-            try:
-                data= Au.stream.read(4410)
-                if self.recognizer.AcceptWaveform(data):
-                    result = self.recognizer.Result()
-                    response = result[14:-3] # split dictionnary and get the string
-                    Au.stream.close()
-                    print('reponse : ', response)
-                    print("stop recording")
-                    if response !='exprimer':
-                        self.responses.append(response)
-                    else: 
-                        self.rec=True
-                    return response
-            except OSError:
-                pass
-
-    def response_tts(self):
+    def response_sst(self):
         dict={}
         for i in range(NB_QUESTION):
             path=FOLDER_A+"response_"+str(i)+".wav"
             wf=wave.open(path,'rb')
             while True:
-                data =wf.readframes(44104)
+                data =wf.readframes(4410)
                 if len(data)==0:
                     break
                 
@@ -187,26 +160,6 @@ class Gladys():
             print(self.responses)
 
         self.send_responses()
-
-    # def test_response_tts(self):
-       
-    #     path="/home/unravel/Downloads/fable.wav"
-    #     wf=wave.open(path,'rb')
-    #     while True:
-    #         data =wf.readframes(44100)
-    #         if len(data)==0:
-    #             break
-    #         if self.recognizer.AcceptWaveform(data):
-    #             print("Result:")
-    #             result = self.recognizer.Result()
-    #             dict=json.loads(result)
-    #             self.responses.append(dict.get("text"))
-
-    #     dict=json.loads(self.recognizer.FinalResult())
-    #     self.responses.append(dict.get("text"))
-
-    #     print (self.responses)
-    #    #self.send_responses()
 
     def play_question_gtts(self):
         path=FOLDER_Q+"question_"+str(self.count)+".mp3"
@@ -234,19 +187,6 @@ class Gladys():
         req=requests.post(url, files=files)
         print(req.text)
 
-
-def routine():
-    gladys=Gladys()
-    print("fetch questions from server")
-    gladys.get_questions(quest_url)
-    for i in range (NB_QUESTION):
-        gladys.play_questions()
-        gladys.get_response()
-        if gladys.rec:
-            gladys.record_audio()
-        gladys.count+=1
-    gladys.send_responses()
-
 def routine_2():    
         gladys=Gladys()
         print("fetch questions audio from server")
@@ -262,14 +202,15 @@ def routine_2():
         for i in range(NB_QUESTION):
             gladys.send_audio() 
             gladys.count +=1   
-        gladys.response_tts()
+        gladys.response_sst()
 
 
 if __name__=='__main__':
     with a.noalsaerr():
-        #routine_2()
-        gladys=Gladys()
-        gladys.response_tts()
+        #print(FOLDER_Q)
+        routine_2()
+        #gladys=Gladys()
+        #gladys.get_questions(quest_url)
         
     
 

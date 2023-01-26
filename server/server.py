@@ -2,10 +2,10 @@ import os
 from flask import Flask,jsonify,request,json,send_file,Response
 
 app = Flask(__name__)
-FOLDER_Q="/home/unravel/IoT/project/server/question"
-FOLDER_R="/home/unravel/IoT/project/server/response"
-#FOLDER_Q="/home/username/project_IoT/server/questions"
-#FOLDER_R="/home/username/project_IoT/server/responses"
+
+path=path=os.getcwd()
+FOLDER_Q=path+"/question"
+FOLDER_R=path+"/response"
 
 @app.route("/",methods=['GET','POST'])
 def questions():
@@ -21,6 +21,9 @@ def questions():
         path =FOLDER_R+'/response.json'
         data= json.dumps(content)
         print(data)
+        file = open(path,"r+")
+        file.truncate(0)
+        file.close()
         f = open(path,'a')
         f.write(data) 
         return Response("ok",200)
