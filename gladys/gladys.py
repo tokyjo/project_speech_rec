@@ -103,9 +103,8 @@ class _Audiofile():
 
 
 class Gladys():
-    def __init__(self,model_path):
+    def __init__(self):
         ## init vosk
-        self.model_path =  model_path
         self.model = Model(lang='fr')
         self.recognizer = KaldiRecognizer(self.model,SAMPLING_RATE) #frequency which should be checked 
         self.recognizer.SetWords(True)
@@ -178,14 +177,13 @@ class Gladys():
                 if self.recognizer.AcceptWaveform(data):
                     print("Result:")
                     result = self.recognizer.Result()
-                    response = result # split dictionnary and get the string
-                    print(response)
                     dict=json.loads(result)
                     self.responses.append(dict.get("text"))
 
             dict=json.loads(self.recognizer.FinalResult())
             print("dict=",dict)
-            self.responses.append(dict.get("text"))
+            if dict["text"]!='':
+                self.responses.append(dict.get("text"))
             print(self.responses)
 
         self.send_responses()
@@ -238,7 +236,7 @@ class Gladys():
 
 
 def routine():
-    gladys=Gladys(model_path)
+    gladys=Gladys()
     print("fetch questions from server")
     gladys.get_questions(quest_url)
     for i in range (NB_QUESTION):
@@ -250,7 +248,7 @@ def routine():
     gladys.send_responses()
 
 def routine_2():    
-        gladys=Gladys(model_path)
+        gladys=Gladys()
         print("fetch questions audio from server")
         gladys.get_questions(quest_url)
         for i in range (NB_QUESTION):
@@ -270,7 +268,7 @@ def routine_2():
 if __name__=='__main__':
     with a.noalsaerr():
         #routine_2()
-        gladys=Gladys(model_path)
+        gladys=Gladys()
         gladys.response_tts()
         
     
