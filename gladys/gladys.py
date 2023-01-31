@@ -13,7 +13,7 @@ FORMAT = pyaudio.paInt16
 CHANNELS = 1
 SAMPLING_RATE= 48000
 FRAME_PER_BUFFER =9600 #chunk
-DEVICE_INDEX= 1
+DEVICE_INDEX= 2
 
 NB_QUESTION= 3
 
@@ -39,8 +39,8 @@ class _GTTS():
     
     def speak(self): 
         print("path audio: ",self.path)   
-        #os.system("aplay -D 'plughw:2,0' "+self.path) 
-        os.system("aplay "+self.path)      
+        os.system("aplay -D 'plughw:2,0' "+self.path) 
+        #os.system("aplay "+self.path)      
 
 
 class _Audiofile():
