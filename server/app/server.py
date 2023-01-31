@@ -10,7 +10,7 @@ FOLDER_R=path+"/response"
 
 @app.before_first_request
 def init_db():
-
+    #db.drop_all()
     db.create_all()
     patient= Patient(name="Car",firstName="toon")
     patient2= Patient(name="Mais",firstName="on")
@@ -28,7 +28,7 @@ def init_db():
     db.session.commit()
     
 
-@app.route("/question",methods=['GET','POST'])
+@app.route("/question",methods=['GET'])
 def questions():
     if(request.method=='GET'):
         quests= Questions.query.all()
@@ -37,17 +37,25 @@ def questions():
             array.append(str(q))
         dict={"questions": array}
         return jsonify(dict)
+    return Response("",404)
 
-    elif(request.method=='POST'):
+@app.route("/response",methods=['POST'])
+def response():
+    if(request.method=='POST'):
         content=request.get_json()
+        name=content["name"]
+      
+        patient=Patient(name=name)
+        db.session.add(patient)
         res=content["responses"]
-        
-        for i in range (len(res)):
-            quest=Questions(text=res[i])
-            db.session.add(quest)
-            db.session.commit()
-
+        print(res)
+        for r in res:
+            rep=Answer(text=str(r))
+            patient.answer.append(rep)
+            db.session.add(rep)
+        db.session.commit()
         return Response("ok",200)
+    return Response("",404)
 
 @app.route('/audio/<id>',methods=['GET','POST'])
 def audio(id):
@@ -56,7 +64,6 @@ def audio(id):
         return send_file(
          path_to_file, 
          mimetype="audio/wav")
-    
     elif(request.method=='POST'):
         save_path=FOLDER_R+"/response_"+str(id)+".wav"
         if 'file'not in request.files:
@@ -98,8 +105,6 @@ def answer(id):
     for answer in patient.answer:
         array.append(str(answer))
     
-    #return jsonify(patient.answer)
-    #return jsonify(patient.answer)
     return jsonify(array)
 
 

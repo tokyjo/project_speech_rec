@@ -107,6 +107,7 @@
             $.getJSON(url, function(result){
                 console.log("length",result.length);
                 parentdiv=document.getElementById("answer-list");
+                parentdiv.innerHTML="";
                 var i;
                 for (i=0; i < result.length; i++){
                     console.log(i);

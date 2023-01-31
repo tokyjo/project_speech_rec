@@ -13,7 +13,7 @@ FORMAT = pyaudio.paInt16
 CHANNELS = 1
 SAMPLING_RATE= 48000
 FRAME_PER_BUFFER =9600 #chunk
-DEVICE_INDEX= 2
+DEVICE_INDEX= -1
 
 NB_QUESTION= 3
 
@@ -39,8 +39,8 @@ class _GTTS():
     
     def speak(self): 
         print("path audio: ",self.path)   
-        os.system("aplay -D 'plughw:2,0' "+self.path) 
-        #os.system("aplay "+self.path)      
+        #os.system("aplay -D 'plughw:2,0' "+self.path) 
+        os.system("aplay "+self.path)      
 
 
 class _Audiofile():
@@ -114,7 +114,9 @@ class Gladys():
 
     def get_questions(self,url):
         req = requests.get(url)
-        jsonobj= json.loads(req.text)
+        jsonobj= req.json()
+        print(url)
+        #print(req["questions"])
         self.questions=jsonobj["questions"]
         NB_QUESTION=len(self.questions)
         print("Number of questions:",NB_QUESTION)
@@ -175,10 +177,12 @@ class Gladys():
         Au.record(path_file)
 
     def send_responses(self):
+        resp_url="http://127.0.0.1:5000/response"
         data = {}
-        data["responses"]=self.responses
+        data["name"]=self.responses[0]
+        data["responses"]=self.responses[1:]
         headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-        req = requests.post(quest_url,data=json.dumps(data),headers=headers)
+        req = requests.post(resp_url,data=json.dumps(data),headers=headers)
     
     def send_audio(self):
         audiofile=FOLDER_A+"response_"+str(self.count)+".wav"
@@ -190,7 +194,8 @@ class Gladys():
 def routine_2():    
         gladys=Gladys()
         print("fetch questions audio from server")
-        gladys.get_questions(quest_url)
+        url=quest_url+"/question"
+        gladys.get_questions(url)
         for i in range (NB_QUESTION):
             gladys.play_question_gtts()
             gladys.record_audio()
