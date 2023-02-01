@@ -16,11 +16,26 @@
 
     <style>
         body{
-            background: url(static/bg.jpg) no-repeat center center fixed; 
-            -webkit-background-size: cover;
-            -moz-background-size: cover;
-            -o-background-size: cover;
-            background-size: cover;
+            background:#fdfaf5;
+        }
+
+        .box{
+            box-sizing : border-box;
+            border: 1.5rem solid transparent;
+            background-clip: padding-box;
+            border-radius: 30px;
+        }
+        .bg-green{
+           background-color: #195d66e0;
+        }
+        .color-text{
+            color: #f5ffff;
+        }
+        .color-green{
+            color: #195d66;
+        }
+        .color-orange{
+            color: #f4926d;
         }
     </style>
 
@@ -29,9 +44,9 @@
 </head>
 <body>
 
-    <nav class="navbar bg-light">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="#">
+    <nav class="navbar bg-green">
+        <div class="container-fluid ">
+          <a class="navbar-brand color-text" href="#">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hospital" viewBox="0 0 16 16">
                 <path d="M8.5 5.034v1.1l.953-.55.5.867L9 7l.953.55-.5.866-.953-.55v1.1h-1v-1.1l-.953.55-.5-.866L7 7l-.953-.55.5-.866.953.55v-1.1h1ZM13.25 9a.25.25 0 0 0-.25.25v.5c0 .138.112.25.25.25h.5a.25.25 0 0 0 .25-.25v-.5a.25.25 0 0 0-.25-.25h-.5ZM13 11.25a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25v-.5Zm.25 1.75a.25.25 0 0 0-.25.25v.5c0 .138.112.25.25.25h.5a.25.25 0 0 0 .25-.25v-.5a.25.25 0 0 0-.25-.25h-.5Zm-11-4a.25.25 0 0 0-.25.25v.5c0 .138.112.25.25.25h.5A.25.25 0 0 0 3 9.75v-.5A.25.25 0 0 0 2.75 9h-.5Zm0 2a.25.25 0 0 0-.25.25v.5c0 .138.112.25.25.25h.5a.25.25 0 0 0 .25-.25v-.5a.25.25 0 0 0-.25-.25h-.5ZM2 13.25a.25.25 0 0 1 .25-.25h.5a.25.25 0 0 1 .25.25v.5a.25.25 0 0 1-.25.25h-.5a.25.25 0 0 1-.25-.25v-.5Z"/>
                 <path d="M5 1a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1a1 1 0 0 1 1 1v4h3a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h3V3a1 1 0 0 1 1-1V1Zm2 14h2v-3H7v3Zm3 0h1V3H5v12h1v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3Zm0-14H6v1h4V1Zm2 7v7h3V8h-3Zm-8 7V8H1v7h3Z"/>
@@ -41,19 +56,29 @@
         </div>
     </nav>
 
-    <div class="container mt-5">
-        <div class="row">
-            <div class="p-5 mb-4 bg-light rounded-3">
-                <div class="container-fluid py-5">
-                  <h1 class="display-5 fw-bold">Gladys interface</h1>
-                  <p class="col-md-8 fs-4">Bienvenue sur l'interface de Gladys. Vous pouvez consulter les réponses de vos patients dans cette section ainsi que modifier vos questions pour améliorer vos suivis</p>
-                </div>
-              </div>
-        </div>
-        <div class="row">
+    <div class="container-fluid">
+        <div class="row bg-green" >
             <div class="col-6">
-                <h2>Questions</h2>
-                <div>Ajouter une nouvelle question:
+                <div class="p-5 mb-4 rounded-3">
+                    <div class="container-fluid py-5 color-text">
+                      <h1 class="display-5 fw-bold">Gladys interface</h1>
+                      <p class="col-md-8 fs-4">Bienvenue sur l'interface de Gladys. Vous pouvez consulter les réponses de vos patients dans cette section ainsi que modifier vos questions pour améliorer vos suivis</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-6">
+                    <img src="/static/logo.png" alt="project_mascot">
+            </div>
+
+        </div>
+    </div>
+    <div class="container">
+        <div class="row ">
+            <div class="col-6 box " style="background-color: #f4926d;">
+                <div class="p-3 color-green rounded-3">
+                    <h2>Questions</h2>
+                    Ajouter une nouvelle question:
                     <form action="{{url_for('add_question')}}" method="POST">
                         <div class="d-flex">
                             <label for="item" class="form-label"></label>
@@ -63,61 +88,63 @@
                         </div>
                     </form>
                 </div>
-
-                <ul class="list-group list-group-flush">
+                <ul class="list-group list-group-flush  p-3 rounded-3" >
                 {%for quest in questionitems%}
-                <li class="list-group-item">{{quest}} <a href="delete/{{quest.id}}" role="button"><i class="bi bi-x" style="font-size: 1.5rem; color: rgb(28, 216, 194);"></i></a>  </li>
+                <li class="list-group-item color-green h5" style="background-color: #f4926d;" >{{quest}} <a href="delete/{{quest.id}}" role="button"><i class="bi bi-x" style="font-size: 1.5rem; color: rgb(28, 216, 194);"></i></a>  </li>
                 {% endfor %}              
                 </ul>
             </div>
-            <div class="col-6">
+            
+            <div class="col-6 box " style="background-color: #f1d7b6;">
+                <div class="p-3 color-green">
+                    <h2>Liste des patients</h2>
+                    <ul class="list-group list-group-flush " id="parent-list">
+                    {%for patient in patient_list%}
+                    <li id="{{patient}}" class="list-group-item list-group-item-action h5 color-green" style="background-color: #f1d7b6;" >{{patient}}</li> 
+                    {%endfor%}
+                    </ul>
+                </div> 
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row rounded-3 m-3 " style="background-color: #195d66;">
+            <div class="color-orange p-3">
                 <h2>Réponses</h2>
-                <div>Saisissez l'identifiant du Patient:
-                    <div class="d-flex">
-                        <label for="id" class="form-label"></label>
-                        <input type="text" class= "form-control" id="patient-id" name="id">
-                        <button class="btn btn-outline-secondary" id="btnsend" >Envoyer</button>
-                    </div>
-                </div>
-                <div >
-                    <ul class='list-group list-group-flush' id="answer-list">
-
+                <div class="d-flex box">
+                    <ul class='list-group list-group-flush' style="background-color: #195d66cd;"id="answer-list">
                     </ul>
                 </div>
             </div>
         </div> 
     </div>
-
+        
     <script>
           /*trigger event*/
-        const button = document.getElementById("btnsend");
-        button.addEventListener("click",getData);
         
         var idnumber;
         var url;
-       
-
-        function getData(){
-            console.log("function called ");
-            idnumber = document.getElementById("patient-id");
-            console.log(idnumber.value);
-            url ='/get-responses/'+String(idnumber.value);
-            //console.log(url);
-            let parentdiv;
+        
+        document.getElementById("parent-list").addEventListener("click",function(e) {
+            // e.target is our targetted element.
+                        // try doing console.log(e.target.nodeName), it will result LI
+            if(e.target && e.target.nodeName == "LI") {
+                console.log(e.target.id + " was clicked");
+            }
+            url ='/get-responses/'+String(e.target.id);
             $.getJSON(url, function(result){
-                console.log("length",result.length);
                 parentdiv=document.getElementById("answer-list");
                 parentdiv.innerHTML="";
+                console.log(result);
                 var i;
                 for (i=0; i < result.length; i++){
                     console.log(i);
                     parentdiv=document.getElementById("answer-list");
-                    parentdiv.innerHTML +="<li class='list-group-item'>"+result[i]+"</li>";
+                    parentdiv.innerHTML +="<li class='list-group-item color-orange p-3 h5'style='background-color: #195d66;' > "+result[i]+"</li>";
                 };    
             });
-            document.getElementById("patient-id").value='';
-            
-        };
+
+         });
 
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>

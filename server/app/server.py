@@ -10,13 +10,13 @@ FOLDER_R=path+"/response"
 
 @app.before_first_request
 def init_db():
-    #db.drop_all()
+   # db.drop_all()
     db.create_all()
-    patient= Patient(name="Car",firstName="toon")
-    patient2= Patient(name="Mais",firstName="on")
-    answer1=Answer(text="je vais bien")
-    answer2=Answer(text="je vais mal")
-    answer3=Answer(text="oui oui")
+    patient= Patient(name="Carl")
+    patient2= Patient(name="Mason")
+    answer1=Answer(text="je vais bien",quest="Comment-allez vous?")
+    answer2=Answer(text="53 kilos",quest="Combien pesez-vous?")
+    answer3=Answer(text="oui oui", quest="As-tu manger tes médicaments")
     
     patient.answer.append(answer1)
     patient.answer.append(answer2)
@@ -45,10 +45,11 @@ def response():
         content=request.get_json()
         name=content["name"]
         patient=check_patient(name)
+        quests= Questions.query.all()
         res=content["responses"]
         print(res)
-        for r in res:
-            rep=Answer(text=str(r))
+        for i in range (len(res)):
+            rep=Answer(text=str(res[i]),quest=str(quests[i+1]))
             patient.answer.append(rep)
             db.session.add(rep)
         db.session.commit()
@@ -75,7 +76,9 @@ def audio(id):
 def index():
     if(request.method=='GET'):
         quests= Questions.query.all()
-        return render_template('board.html',questionitems= quests)
+        p_list=db.session.execute(db.select(Patient).order_by(Patient.name)).scalars()
+        data=json.dumps([1.0,2.0,3.0])
+        return render_template('board.html',questionitems= quests,patient_list=p_list, data_json=data)
 
 @app.route('/add-q', methods=['POST'])
 def add_question():
@@ -104,6 +107,14 @@ def answer(name):
         array.append(str(answer))
     return jsonify(array)
 
+@app.route('/get-patient')
+def patient():
+    list_patient=Patient.query.all()
+    array=[]
+    for p in list_patient:
+        array.append(str(p.name))
+    return jsonify(array)
+
 def check_patient(name):
     patient=Patient.query.filter_by(name=name).first()
     if patient is None :
@@ -111,6 +122,7 @@ def check_patient(name):
         db.session.add(patient)
         db.session.commit() 
     return patient
+
 
 
 # def get_question():

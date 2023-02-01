@@ -25,9 +25,9 @@ class Questions(db.Model):
 class Answer(db.Model):
     id=db.Column(db.Integer, primary_key=True)
     text=db.Column(db.String, nullable=False)
-    
-    
+    quest=db.Column(db.String, nullable=False)   
 
     def __repr__(self):
-        return self.text
+
+        return f"Réponse : "+self.text +". Question :"+  self.quest
 
