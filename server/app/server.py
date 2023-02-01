@@ -10,7 +10,7 @@ FOLDER_R=path+"/response"
 
 @app.before_first_request
 def init_db():
-    db.drop_all()
+   # db.drop_all()
     db.create_all()
     patient= Patient(name="Carl")
     patient2= Patient(name="Mason")
