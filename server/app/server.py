@@ -44,9 +44,7 @@ def response():
     if(request.method=='POST'):
         content=request.get_json()
         name=content["name"]
-      
-        patient=Patient(name=name)
-        db.session.add(patient)
+        patient=check_patient(name)
         res=content["responses"]
         print(res)
         for r in res:
@@ -97,17 +95,22 @@ def delete(id):
     except:
         return "Error while deleting questions"
 
-@app.route('/get-responses/<id>')
-def answer(id):
-    patient=Patient.query.filter_by(id=int(id)).first()
+@app.route('/get-responses/<name>')
+def answer(name):
+    patient=Patient.query.filter_by(name=str(name)).first()
     print(patient.answer)
     array=[]
     for answer in patient.answer:
         array.append(str(answer))
-    
     return jsonify(array)
 
-
+def check_patient(name):
+    patient=Patient.query.filter_by(name=name).first()
+    if patient is None :
+        patient=Patient(name=name)
+        db.session.add(patient)
+        db.session.commit() 
+    return patient
 
 
 # def get_question():

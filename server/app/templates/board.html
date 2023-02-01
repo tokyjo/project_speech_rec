@@ -75,7 +75,7 @@
                 <div>Saisissez l'identifiant du Patient:
                     <div class="d-flex">
                         <label for="id" class="form-label"></label>
-                        <input type="number" class= "form-control" id="patient-id" name="id">
+                        <input type="text" class= "form-control" id="patient-id" name="id">
                         <button class="btn btn-outline-secondary" id="btnsend" >Envoyer</button>
                     </div>
                 </div>
@@ -115,6 +115,8 @@
                     parentdiv.innerHTML +="<li class='list-group-item'>"+result[i]+"</li>";
                 };    
             });
+            document.getElementById("patient-id").value='';
+            
         };
 
     </script>
