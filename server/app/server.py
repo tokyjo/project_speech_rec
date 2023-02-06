@@ -10,21 +10,21 @@ FOLDER_R=path+"/response"
 
 @app.before_first_request
 def init_db():
-   # db.drop_all()
+    #db.drop_all()
     db.create_all()
-    patient= Patient(name="Carl")
-    patient2= Patient(name="Mason")
-    answer1=Answer(text="je vais bien",quest="Comment-allez vous?")
-    answer2=Answer(text="53 kilos",quest="Combien pesez-vous?")
-    answer3=Answer(text="oui oui", quest="As-tu manger tes médicaments")
+    #patient= Patient(name="Carl")
+    #patient2= Patient(name="Mason")
+    #answer1=Answer(text="je vais bien",quest="Comment-allez vous?")
+    #answer2=Answer(text="53 kilos",quest="Combien pesez-vous?")
+    #answer3=Answer(text="oui oui", quest="As-tu manger tes médicaments")
     
-    patient.answer.append(answer1)
-    patient.answer.append(answer2)
+    #patient.answer.append(answer1)
+    #patient.answer.append(answer2)
     
-    patient2.answer.append(answer2)
-    patient2.answer.append(answer3)
+    #patient2.answer.append(answer2)
+    #patient2.answer.append(answer3)
 
-    db.session.add_all([patient,patient2,answer1,answer2,answer3])
+    #db.session.add_all([patient,patient2,answer1,answer2,answer3])
     db.session.commit()
     
 
