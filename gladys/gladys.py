@@ -1,19 +1,22 @@
 from vosk import Model, KaldiRecognizer
 from pydub import AudioSegment
 from gtts import gTTS
+from pixel_ring import pixel_ring
+from gpiozero import LED, Button
 import pyaudio
 import requests
 import json
 import wave
 import os 
 import alsa_error as a
-
+from signal import pause
+from subprocess import call
 
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
 SAMPLING_RATE= 48000
 FRAME_PER_BUFFER =9600 #chunk
-DEVICE_INDEX= -1
+DEVICE_INDEX= 2
 
 NB_QUESTION= 3
 
@@ -22,6 +25,12 @@ quest_url="http://127.0.0.1:5000"
 path=os.getcwd()
 FOLDER_Q = path+"/questions/"
 FOLDER_A= path+"/responses/"
+
+button_on = Button(26)
+button_add_volume = Button(12)
+button_reduce_volume = Button(13)
+
+power=LED(5)
 
 class _GTTS():
     engine=None
@@ -39,8 +48,8 @@ class _GTTS():
     
     def speak(self): 
         print("path audio: ",self.path)   
-        #os.system("aplay -D 'plughw:2,0' "+self.path) 
-        os.system("aplay "+self.path)      
+        os.system("aplay -D 'plughw:2,0' "+self.path) 
+        #os.system("aplay "+self.path)      
 
 
 class _Audiofile():
@@ -141,6 +150,7 @@ class Gladys():
         
     def response_sst(self):
         dict={}
+        print("Number of questions :", NB_QUESTION)
         for i in range(NB_QUESTION):
             path=FOLDER_A+"response_"+str(i)+".wav"
             wf=wave.open(path,'rb')
@@ -197,10 +207,13 @@ def routine_2():
         url=quest_url+"/question"
         gladys.get_questions(url)
         for i in range (NB_QUESTION):
+            pixel_ring.speak()
             gladys.play_question_gtts()
+            pixel_ring.think()
             gladys.record_audio()
             gladys.count+=1
 
+        pixel_ring.wakeup()
         print("session finished")
         print("now... uploading response to server")    
         gladys.count =0
@@ -209,15 +222,34 @@ def routine_2():
             gladys.count +=1   
         gladys.response_sst()
 
+def add_volume():
+        print("Volume increased")
+        call(["amixer", "-c", "2",  "sset", "Speaker", "10%+"])
+
+def reduce_volume():
+        print("Volume reduced")
+        call(["amixer", "-c", "2", "sset", "Speaker", "10%-"])
 
 if __name__=='__main__':
-    with a.noalsaerr():
-        #print(FOLDER_Q)
-        routine_2()
-        #gladys=Gladys()
-        #gladys.get_questions(quest_url)
-        
-    
+    while True:
+        with a.noalsaerr():
+            print("Released. Waiting for press")
+            button_on.wait_for_press()
+            print("Button pressed")
+            #print(FOLDER_Q)
+            button_add_volume.when_pressed=add_volume
+            button_reduce_volume.when_pressed=reduce_volume
+            power.on()
+            pixel_ring.change_pattern('echo')
+            pixel_ring.set_brightness(10)
+            pixel_ring.wakeup()
+            routine_2()
+            pixel_ring.off()
+            power.off()
+        		
+           #gladys=Gladys()
+           #gladys.get_questions(quest_url)
+              
 
         
 
